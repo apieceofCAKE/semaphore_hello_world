@@ -53,6 +53,9 @@ int main()
     pthread_join(even_removal_thread, NULL);
     pthread_join(prime_removal_thread, NULL);
 
+    printf("\nAt this point, if we haven't used any locking mechanism, a race condition will have \n"
+           "occured and we'll see some unexpected behaviour on the updated array.\n");
+
     printf(("\nThe updated array will be printed...\n"));
     print_global_array('y');
 
