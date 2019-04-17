@@ -1,17 +1,15 @@
 /*
 Operational Systems class assignment, part 2. Now it's time to use semaphores.  */
 
-/*
-The code seems to work with or without the semaphore. Both thread functions, as is, are traversing the array
-in a backwards fashion. Traversing frontwards shows undefined behaviour.  */
 
 //Preprocessor directives
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include <time.h>
+#include <unistd.h>
 
-#define SIZE 1000
+#define SIZE 100000
 
 
 //Declaration
@@ -127,28 +125,26 @@ int prime_check(int number_to_check)
 Removes all prime numbers from a given integer array.  */
 void *remove_all_prime_numbers()
 {
-
     int prime_flag;
-    int counter = SIZE - 1;
+    int counter = 0;
 
-    while (counter >= 0)
+    //Entering critical section
+    pthread_mutex_lock(&mutex);
+
+    while (counter < SIZE)
         {
-
-        //Entering critical section
-        pthread_mutex_lock(&mutex);
-
         prime_flag = prime_check(global_array[counter]);
 
         if (prime_flag == 1)
             {
             remove_global_array_element(counter);
+            counter --;
             }
-
-        //Exiting critical section
-        pthread_mutex_unlock(&mutex);
-
-        counter--;
+        counter++;
         }
+
+    //Exiting critical section
+    pthread_mutex_unlock(&mutex);
 
     return NULL;
 }
@@ -158,24 +154,23 @@ void *remove_all_prime_numbers()
 Removes all even numbers from a given integer array.  */
 void *remove_all_even_numbers()
 {
-    int counter = SIZE - 1;
+    int counter = 0;
 
-    while (counter >= 0)
+    //Entering critical section
+    pthread_mutex_lock(&mutex);
+
+    while (counter < SIZE)
         {
-
-        //Entering critical section
-        pthread_mutex_lock(&mutex);
-
         if ((global_array[counter] != 0) && (global_array[counter] % 2) == 0)
             {
             remove_global_array_element(counter);
+            counter --;
             }
-
-        //Exiting critical section
-        pthread_mutex_unlock(&mutex);
-
-        counter--;
+        counter++;
         }
+
+    //Exiting critical section
+    pthread_mutex_unlock(&mutex);
 
     return NULL;
 }
